@@ -20,69 +20,8 @@ window.addEventListener("load", function () {
   const volumeIcon = document.querySelector(".volume-icon");
   const iconDown = document.querySelector(".icon-down");
 
-  //create li according to the array length (final step)
-  document.addEventListener("click", (e) => {
-    if (!e.target.matches(".music-list") && !e.target.matches("#more-music")) {
-      musicList.classList.remove("show");
-    }
-    if (!e.target.matches(".icon-down")) {
-      volumeArea.classList.remove("show");
-    }
-  });
-  const ulTag = wrapper.querySelector("ul");
-  for (let i = 0; i < allMusic.length; i++) {
-    let liTag = `
-    <li>
-    <div class="row">
-        <span>
-            ${allMusic_2[i].name}
-        </span>
-        <p>${allMusic_2[i].artist}</p>
-    </div>
-    <audio class="${allMusic[i].src}" src="./assets/music/${allMusic[i].src}.mp3"></audio>
-    <span  id="${allMusic[i].src}" class="audio-duration"></span>
-    <div id='bars'>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-    <div class='bar'></div>
-  </div>
-  </li>
-  `;
-    ulTag.insertAdjacentHTML("beforeend", liTag);
-    let liAudioTag = ulTag.querySelector(`.${allMusic[i].src}`); //music
-    let liAudioDuration = ulTag.querySelector(`#${allMusic[i].src}`); //time
-    //thêm audio là để setup time trong li
-    liAudioTag.addEventListener("loadeddata", (e) => {
-      liAudioDuration.innerText = format(e.target.duration);
-    });
-  }
-
-  const allLiTags = [...ulTag.querySelectorAll("li")];
-
-  allLiTags.forEach((item) =>
-    item.addEventListener("click", function () {
-      const liIndex = allLiTags.indexOf(this) + 1;
-      musicIndex = liIndex;
-      allLiTags.forEach((el) => el.classList.remove("playing"));
-      allLiTags[musicIndex - 1].classList.add("playing");
-      loadMusic(musicIndex);
-      playMusic();
-      showMoreBtn.click();
-    })
-  );
-
-  function removeLiTagsRemainedPlaying(indexMove) {
-    allLiTags.forEach((el) => el.classList.remove("playing"));
-    allLiTags[indexMove - 1].classList.add("playing");
-  }
-
+  createLiTag();
+  const allLiTags = [...document.querySelectorAll("li")];
   //Start here
   let musicIndex = Math.floor(Math.random() * allMusic.length + 1);
   loadMusic(musicIndex);
@@ -260,7 +199,7 @@ window.addEventListener("load", function () {
         break;
       case "shuffle":
         //generating random index  between max range of array length
-        let randIndex = Math.floor(Math.random() * allMusic.length + 1);
+        let randIndex;
         do {
           randIndex = Math.floor(Math.random() * allMusic.length + 1);
         } while (musicIndex === randIndex); //this loop run until the next random number is different from the current music index
@@ -332,7 +271,70 @@ window.addEventListener("load", function () {
     }
   }
 
-  // touch volume
+  //create li according to the array length (final step)
+  document.addEventListener("click", (e) => {
+    if (!e.target.matches(".music-list") && !e.target.matches("#more-music")) {
+      musicList.classList.remove("show");
+    }
+    if (!e.target.matches(".icon-down")) {
+      volumeArea.classList.remove("show");
+    }
+  });
+
+  function createLiTag() {
+  const ulTag = wrapper.querySelector("ul");
+    for (let i = 0; i < allMusic.length; i++) {
+      let liTag = `
+  <li>
+    <div class="row">
+      <span>
+          ${allMusic_2[i].name}
+      </span>
+      <p>${allMusic_2[i].artist}</p>
+    </div>
+    <audio class="${allMusic[i].src}" src="./assets/music/${allMusic[i].src}.mp3"></audio>
+    <span  id="${allMusic[i].src}" class="audio-duration"></span>
+    <div id='bars'>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+        <div class='bar'></div>
+    </div>
+</li>
+`;
+      ulTag.insertAdjacentHTML("beforeend", liTag);
+      let liAudioTag = ulTag.querySelector(`.${allMusic[i].src}`); //music
+      let liAudioDuration = ulTag.querySelector(`#${allMusic[i].src}`); //time
+      //thêm audio là để setup time trong li
+      liAudioTag.addEventListener("loadeddata", (e) => {
+        liAudioDuration.innerText = format(e.target.duration);
+      });
+    }
+  }
+  allLiTags.forEach((item) =>
+    item.addEventListener("click", function () {
+      const liIndex = allLiTags.indexOf(this) + 1;
+      musicIndex = liIndex;
+      allLiTags.forEach((el) => el.classList.remove("playing"));
+      allLiTags[musicIndex - 1].classList.add("playing");
+      loadMusic(musicIndex);
+      playMusic();
+      showMoreBtn.click();
+    })
+  );
+
+  function removeLiTagsRemainedPlaying(indexMove) {
+    allLiTags.forEach((el) => el.classList.remove("playing"));
+    allLiTags[indexMove - 1].classList.add("playing");
+  }
+
+  // touch volume on mobile
   volume.addEventListener("touchstart", function () {
     volume.addEventListener("touchmove", handleTouchVolume);
   });
